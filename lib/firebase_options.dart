@@ -26,7 +26,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -40,20 +43,10 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCEg0FpJsjfI-RxMkt6esfz5hl8VxkafcA',
-    appId: '1:577163815637:android:1df9f64b037762b745105c',
-    messagingSenderId: '577163815637',
-    projectId: 'chattesteflutter-e61c3',
-    storageBucket: 'chattesteflutter-e61c3.appspot.com',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDdQx7uq1NCxUbrjxB_KpkrCX2S3jWnb3k',
-    appId: '1:577163815637:ios:74b0fcc88d320fd445105c',
-    messagingSenderId: '577163815637',
-    projectId: 'chattesteflutter-e61c3',
-    storageBucket: 'chattesteflutter-e61c3.appspot.com',
-    iosClientId: '577163815637-5s035k76h5ivi58gn1t904npa53upv8m.apps.googleusercontent.com',
-    iosBundleId: 'com.example.astrosApp',
+    apiKey: 'AIzaSyDhpGJs28opOu_rlvjHZ1RudPvTDR-k_Js',
+    appId: '1:790479544694:android:becee724ce2a9b8a305a57',
+    messagingSenderId: '790479544694',
+    projectId: 'runkingapp',
+    storageBucket: 'runkingapp.appspot.com',
   );
 }

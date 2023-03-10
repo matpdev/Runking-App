@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "790479544694",
+    "project_id": "runkingapp",
+    "storage_bucket": "runkingapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:790479544694:android:becee724ce2a9b8a305a57",
+        "android_client_info": {
+          "package_name": "br.com.runking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "790479544694-er4edp59msjb6rrn4eue3q8utal2fhio.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhpGJs28opOu_rlvjHZ1RudPvTDR-k_Js"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "790479544694-er4edp59msjb6rrn4eue3q8utal2fhio.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
