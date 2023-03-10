@@ -1,5 +1,8 @@
 // ignore_for_file: unnecessary_new, unnecessary_this
 
+import 'dart:convert';
+import 'package:flutter/material.dart';
+
 class UserModel {
   UserModel({
     this.id,
@@ -23,7 +26,7 @@ class UserModel {
   String? cpf;
   String? rg;
   String? birthDate;
-  String? image;
+  Image? image;
   String? token;
 
   void clearData() {
@@ -51,7 +54,12 @@ class UserModel {
       cpf = jsonData['cpf'].toString();
       rg = jsonData['rg'].toString();
       birthDate = jsonData['birthDate'].toString();
-      image = jsonData['image'].toString();
+      image = Image.memory(
+        base64Decode(jsonData['image'].toString().substring(
+            jsonData['image'].toString().indexOf(",") + 1,
+            jsonData['image'].toString().length)),
+        fit: BoxFit.cover,
+      );
       token = jsonData['jwt'].toString();
     } else {
       clearData();

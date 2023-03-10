@@ -13,7 +13,7 @@ class DB {
 
   Future<dynamic> openDbUser() async {
     db = await openDatabase(
-      'user_db2.db',
+      'user_db3.db',
       version: 1,
       onCreate: (db, version) async {
         await db.execute('''
@@ -71,7 +71,7 @@ class DB {
           await saveUserToken(response.data['jwt'].toString());
 
           userController.setUserData(
-            response.data as Map<String, dynamic>,
+            response.data,
           );
 
           await db!.update(

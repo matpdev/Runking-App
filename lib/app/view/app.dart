@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:runking_app/db/user_db.dart';
 import 'package:runking_app/globalController/user_controller.dart';
 import 'package:runking_app/pages/home/view/home_page.dart';
 import 'package:runking_app/pages/splashscreen/splashscreen_page.dart';
@@ -25,19 +26,15 @@ class _AppState extends State<App> {
   }
 
   Future userLogin() async {
-    // await DB().loginUser();
-    // setState(() {
-    //   userData;
-    // });
-    // if (userData.userdata.value.token != null) {
-    //   Get.to(const HomePage());
-    // } else {
-    //   Get.to(const OnboardingScreen());
-    // }
-
-    Timer(const Duration(seconds: 2), () {
-      Get.to(const HomePage());
+    await DB().loginUser();
+    setState(() {
+      userData;
     });
+    if (userData.userdata.value.token != null) {
+      Get.to(const HomePage());
+    } else {
+      Get.to(const HomePage());
+    }
   }
 
   @override

@@ -231,23 +231,22 @@ class _CustomHeaderState extends State<CustomHeader> {
                   margin: EdgeInsets.only(bottom: 5),
                   width: 55,
                   height: 55,
+                  clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
-                    image: userData.userdata.value.image != null
+                    image: userData.userdata.value.image == null
                         ? DecorationImage(
-                            fit: BoxFit.cover,
-                            image: NetworkImage(
-                              userData.userdata.value.image!,
-                            ),
-                          )
-                        : DecorationImage(
                             fit: BoxFit.cover,
                             image: AssetImage(
                               "assets/icons/runkingIcon.png",
                             ),
-                          ),
+                          )
+                        : null,
                   ),
+                  child: userData.userdata.value.image != null
+                      ? userData.userdata.value.image!
+                      : null,
                 ),
                 SizedBox(
                   width: 70,
