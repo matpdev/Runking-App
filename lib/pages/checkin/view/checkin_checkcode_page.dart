@@ -2,18 +2,22 @@
 
 import 'dart:io';
 
+import 'package:dio/dio.dart';
+import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
+import 'package:get/instance_manager.dart';
+import 'package:get/route_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 import 'package:runking_app/consts/colors.dart';
+import 'package:runking_app/globalController/checkin_controller.dart';
 import 'package:runking_app/globalController/user_controller.dart';
 import 'package:runking_app/globalController/widgets/bottom_navigation_controller.dart';
-import 'package:runking_app/pages/account/login/login_page.dart';
 import 'package:runking_app/pages/checkin/view/checkin_finish_page.dart';
+import 'package:runking_app/repository/checkin_repository.dart';
 import 'package:runking_app/widgets/widgets.dart';
 
 class CheckinCheckCodePage extends StatefulWidget {
@@ -27,6 +31,7 @@ class _CheckinCheckCodePageState extends State<CheckinCheckCodePage> {
   bool isVisible = false, isLoading = false;
   final userData = Get.put<UserController>(UserController());
   final navigationIndex = Get.put<NavigationController>(NavigationController());
+  final checkinController = Get.put<CheckinController>(CheckinController());
 
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
 
@@ -55,8 +60,6 @@ class _CheckinCheckCodePageState extends State<CheckinCheckCodePage> {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
 
-    print(result?.code);
-
     return Scaffold(
       bottomNavigationBar: BottomBarCustom(),
       extendBody: true,
@@ -78,7 +81,11 @@ class _CheckinCheckCodePageState extends State<CheckinCheckCodePage> {
           ),
           child: ListView(
             children: [
-              CustomHeader(),
+              CustomHeader(
+                onTap: () {
+                  controller?.stopCamera();
+                },
+              ),
               Column(
                 children: [
                   Container(
@@ -214,12 +221,22 @@ class _CheckinCheckCodePageState extends State<CheckinCheckCodePage> {
 
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
-    controller.scannedDataStream.listen((scanData) {
-      setState(() {
-        result = scanData;
-      });
-      controller.stopCamera();
-      Get.to(CheckinFinishPage());
+    controller.scannedDataStream.listen((scanData) async {
+      controller.pauseCamera();
+      try {
+        Response response = await CheckinRepo.checkinQrCode(
+          int.parse(scanData.code.toString()),
+          checkinController.athletesSelected.value,
+        );
+        Get.to(CheckinFinishPage());
+      } on DioError catch (e) {
+        ElegantNotification.error(
+          description: Text(
+            "${e.response?.data["message"]}. Tente novamente",
+          ),
+        ).show(context);
+        controller.resumeCamera();
+      }
     });
   }
 
@@ -227,67 +244,5 @@ class _CheckinCheckCodePageState extends State<CheckinCheckCodePage> {
   void dispose() {
     controller?.dispose();
     super.dispose();
-  }
-}
-
-class CustomHeader extends StatelessWidget {
-  const CustomHeader({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SizedBox(
-            width: 60,
-          ),
-          Container(
-            width: 160,
-            height: 100,
-            margin: const EdgeInsets.only(top: 10, bottom: 20),
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/icons/runkingIcon.png"),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () {
-              Get.to(LoginPage());
-            },
-            child: Column(
-              children: [
-                Container(
-                  width: 55,
-                  height: 55,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: AssetImage(
-                        "assets/icons/runkingIcon.png",
-                      ),
-                    ),
-                  ),
-                ),
-                Text(
-                  "Name",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
-    );
   }
 }

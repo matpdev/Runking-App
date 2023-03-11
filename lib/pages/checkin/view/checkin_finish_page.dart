@@ -8,7 +8,6 @@ import 'package:runking_app/consts/colors.dart';
 import 'package:runking_app/globalController/user_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:runking_app/globalController/widgets/bottom_navigation_controller.dart';
-import 'package:runking_app/pages/account/login/login_page.dart';
 import 'package:runking_app/widgets/widgets.dart';
 
 class CheckinFinishPage extends StatefulWidget {
@@ -54,7 +53,9 @@ class _CheckinFinishPageState extends State<CheckinFinishPage> {
           ),
           child: ListView(
             children: [
-              CustomHeader(),
+              CustomHeader(
+                onTap: () {},
+              ),
               Column(
                 children: [
                   Container(
@@ -274,68 +275,6 @@ class CheckBoxRow extends StatelessWidget {
             )
           ],
         ),
-      ),
-    );
-  }
-}
-
-class CustomHeader extends StatelessWidget {
-  const CustomHeader({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SizedBox(
-            width: 60,
-          ),
-          Container(
-            width: 160,
-            height: 100,
-            margin: const EdgeInsets.only(top: 10, bottom: 20),
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/icons/runkingIcon.png"),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () {
-              Get.to(LoginPage());
-            },
-            child: Column(
-              children: [
-                Container(
-                  width: 55,
-                  height: 55,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: AssetImage(
-                        "assets/icons/runkingIcon.png",
-                      ),
-                    ),
-                  ),
-                ),
-                Text(
-                  "Name",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
       ),
     );
   }

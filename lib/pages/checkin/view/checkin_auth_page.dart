@@ -1,14 +1,19 @@
 // ignore_for_file: unnecessary_lambdas, inference_failure_on_function_return_type, prefer_final_locals, omit_local_variable_types, prefer_const_constructors
 
+import 'package:dio/dio.dart';
+import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
+import 'package:get/instance_manager.dart';
+import 'package:get/route_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:runking_app/consts/colors.dart';
+import 'package:runking_app/globalController/checkin_controller.dart';
 import 'package:runking_app/globalController/user_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:runking_app/globalController/widgets/bottom_navigation_controller.dart';
-import 'package:runking_app/pages/account/login/login_page.dart';
+import 'package:runking_app/repository/checkin_repository.dart';
 import 'package:runking_app/widgets/widgets.dart';
 
 class CheckinAuthorizePage extends StatefulWidget {
@@ -19,18 +24,40 @@ class CheckinAuthorizePage extends StatefulWidget {
 }
 
 class _CheckinAuthorizePageState extends State<CheckinAuthorizePage> {
-  bool isVisible = false, isLoading = false;
+  bool isVisible = false, isLoading = false, isLoadingAuth = false;
+  bool isSelected = false;
+  Map userSearched = {};
   TextEditingController nameUserThird = TextEditingController();
-
   final userData = Get.put<UserController>(UserController());
   final navigationIndex = Get.put<NavigationController>(NavigationController());
-
-  bool isSelected = false;
+  final checkinController = Get.put<CheckinController>(CheckinController());
 
   @override
   void initState() {
     super.initState();
     navigationIndex.indexSelected.value = 1;
+  }
+
+  void getAthleteAuth(String search) async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      Response response = await CheckinRepo.getThirdParty(
+        checkinController.eventId.value,
+        search,
+      );
+      userSearched = response.data;
+    } on DioError catch (e) {
+      ElegantNotification.error(
+        description: Text(
+          e.response?.data["message"],
+        ),
+      ).show(context);
+    }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -60,7 +87,9 @@ class _CheckinAuthorizePageState extends State<CheckinAuthorizePage> {
               ),
               child: ListView(
                 children: [
-                  CustomHeader(),
+                  CustomHeader(
+                    onTap: () {},
+                  ),
                   Column(
                     children: [
                       Container(
@@ -156,6 +185,9 @@ class _CheckinAuthorizePageState extends State<CheckinAuthorizePage> {
                                 textAlignVertical: TextAlignVertical.bottom,
                                 cursorColor: Colors.black,
                                 controller: nameUserThird,
+                                onChanged: (value) async {
+                                  getAthleteAuth(value);
+                                },
                                 decoration: InputDecoration(
                                   fillColor: Colors.white,
                                   filled: true,
@@ -195,43 +227,52 @@ class _CheckinAuthorizePageState extends State<CheckinAuthorizePage> {
                                 ),
                               ),
                             ),
-                            Container(
-                              margin: EdgeInsets.symmetric(vertical: 20),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    "JOÃO MARCOS FARIAS",
-                                    style: GoogleFonts.sourceSansPro(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w900,
-                                    ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                            if (isLoading)
+                              CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                            if (!isLoading)
+                              if (userSearched.isNotEmpty)
+                                Container(
+                                  margin: EdgeInsets.symmetric(vertical: 20),
+                                  child: Column(
                                     children: [
                                       Text(
-                                        "24/01/1987",
+                                        userSearched["name"],
+                                        style: GoogleFonts.sourceSansPro(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            DateFormat.yMd("pt_BR").format(
+                                                DateTime.parse(
+                                                    userSearched["birthDate"])),
+                                            style: GoogleFonts.sourceSansPro(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Text(
+                                        userSearched["team"],
                                         style: GoogleFonts.sourceSansPro(
                                           color: Colors.white,
                                           fontSize: 16,
-                                          fontWeight: FontWeight.w500,
+                                          fontWeight: FontWeight.w300,
+                                          fontStyle: FontStyle.italic,
                                         ),
                                       ),
                                     ],
                                   ),
-                                  Text(
-                                    "EQUIPE CHRONOMAX",
-                                    style: GoogleFonts.sourceSansPro(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w300,
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                                ),
                             CheckBoxRow(
                               name:
                                   "Ao clicar em autorizar você concorda que essa pessoa retire seu kit e todos os pertences adquiridos por você no momento da inscrição.",
@@ -241,6 +282,7 @@ class _CheckinAuthorizePageState extends State<CheckinAuthorizePage> {
                                   isSelected = !isSelected;
                                 });
                               },
+                              code: '',
                             ),
                             Container(
                               padding: EdgeInsets.symmetric(horizontal: 20),
@@ -248,26 +290,39 @@ class _CheckinAuthorizePageState extends State<CheckinAuthorizePage> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Container(
-                                    color: blueNeutralButtonColor,
-                                    width: 100,
-                                    height: 40,
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      "VOLTAR",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w900,
-                                        fontStyle: FontStyle.italic,
+                                  InkWell(
+                                    onTap: () {
+                                      Get.back();
+                                    },
+                                    child: Container(
+                                      color: blueNeutralButtonColor,
+                                      width: 100,
+                                      height: 40,
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        "VOLTAR",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w900,
+                                          fontStyle: FontStyle.italic,
+                                        ),
                                       ),
                                     ),
                                   ),
                                   InkWell(
                                     onTap: () {
-                                      setState(() {
-                                        isVisible = !isVisible;
-                                      });
+                                      if (isSelected) {
+                                        setState(() {
+                                          isVisible = !isVisible;
+                                        });
+                                      } else {
+                                        ElegantNotification.error(
+                                          description: Text(
+                                            "Necessário autorizar!",
+                                          ),
+                                        ).show(context);
+                                      }
                                     },
                                     child: Container(
                                       color: secondColor,
@@ -382,10 +437,36 @@ class _CheckinAuthorizePageState extends State<CheckinAuthorizePage> {
                           ),
                         ),
                         InkWell(
-                          onTap: () {
-                            setState(() {
-                              isVisible = !isVisible;
-                            });
+                          onTap: () async {
+                            if (!isLoadingAuth) {
+                              setState(() {
+                                isLoadingAuth = true;
+                              });
+                              try {
+                                Response response =
+                                    await CheckinRepo.authThirdParty(
+                                  checkinController.eventId.value,
+                                  userSearched["id"],
+                                );
+                                // ignore: use_build_context_synchronously
+                                ElegantNotification.success(
+                                  description: Text(
+                                    response.data["message"],
+                                  ),
+                                ).show(context);
+                                setState(() {
+                                  isVisible = !isVisible;
+                                  isLoadingAuth = false;
+                                });
+                                Get.back();
+                              } on DioError catch (e) {
+                                ElegantNotification.error(
+                                  description: Text(
+                                    e.response?.data["message"],
+                                  ),
+                                ).show(context);
+                              }
+                            }
                           },
                           child: Container(
                             color: secondColor,
@@ -408,124 +489,6 @@ class _CheckinAuthorizePageState extends State<CheckinAuthorizePage> {
                 ],
               ),
             )
-        ],
-      ),
-    );
-  }
-}
-
-class CheckBoxRow extends StatelessWidget {
-  const CheckBoxRow({
-    super.key,
-    required this.name,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final String name;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-        child: Row(
-          children: [
-            Container(
-              width: 25,
-              height: 25,
-              margin: EdgeInsets.only(right: 10),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white),
-                borderRadius: BorderRadius.circular(
-                  4,
-                ),
-              ),
-              child: isSelected
-                  ? Icon(
-                      Icons.check,
-                      color: secondColor,
-                    )
-                  : null,
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: Text(
-                name,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class CustomHeader extends StatelessWidget {
-  const CustomHeader({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SizedBox(
-            width: 60,
-          ),
-          Container(
-            width: 160,
-            height: 100,
-            margin: const EdgeInsets.only(top: 10, bottom: 20),
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/icons/runkingIcon.png"),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () {
-              Get.to(LoginPage());
-            },
-            child: Column(
-              children: [
-                Container(
-                  width: 55,
-                  height: 55,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: AssetImage(
-                        "assets/icons/runkingIcon.png",
-                      ),
-                    ),
-                  ),
-                ),
-                Text(
-                  "Name",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ],
-            ),
-          )
         ],
       ),
     );

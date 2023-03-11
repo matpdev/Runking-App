@@ -54,12 +54,14 @@ class UserModel {
       cpf = jsonData['cpf'].toString();
       rg = jsonData['rg'].toString();
       birthDate = jsonData['birthDate'].toString();
-      image = Image.memory(
-        base64Decode(jsonData['image'].toString().substring(
-            jsonData['image'].toString().indexOf(",") + 1,
-            jsonData['image'].toString().length)),
-        fit: BoxFit.cover,
-      );
+      image = jsonData['image'].toString().length > 40
+          ? Image.memory(
+              base64Decode(jsonData['image'].toString().substring(
+                  jsonData['image'].toString().indexOf(",") + 1,
+                  jsonData['image'].toString().length)),
+              fit: BoxFit.cover,
+            )
+          : null;
       token = jsonData['jwt'].toString();
     } else {
       clearData();

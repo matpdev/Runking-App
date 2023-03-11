@@ -1,8 +1,4 @@
-import 'dart:async';
-
-import 'package:runking_app/db/user_db.dart';
 import 'package:runking_app/globalController/user_controller.dart';
-import 'package:runking_app/pages/home/view/home_page.dart';
 import 'package:runking_app/pages/splashscreen/splashscreen_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,20 +17,6 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
-
-    userLogin();
-  }
-
-  Future userLogin() async {
-    await DB().loginUser();
-    setState(() {
-      userData;
-    });
-    if (userData.userdata.value.token != null) {
-      Get.to(const HomePage());
-    } else {
-      Get.to(const HomePage());
-    }
   }
 
   @override

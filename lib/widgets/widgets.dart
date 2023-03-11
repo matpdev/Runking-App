@@ -2,10 +2,12 @@
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:runking_app/consts/colors.dart';
 import 'package:runking_app/globalController/user_controller.dart';
 import 'package:runking_app/globalController/widgets/bottom_navigation_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:runking_app/pages/account/login/login_page.dart';
 import 'package:runking_app/pages/checkin/view/checkin_page.dart';
 import 'package:runking_app/pages/home/view/home_page.dart';
 import 'package:runking_app/pages/results/results_page.dart';
@@ -19,6 +21,7 @@ class BottomBarCustom extends StatefulWidget {
 
 class _BottomBarCustomState extends State<BottomBarCustom> {
   final navigationIndex = Get.put<NavigationController>(NavigationController());
+  final userData = Get.put<UserController>(UserController());
 
   @override
   Widget build(BuildContext context) {
@@ -60,11 +63,15 @@ class _BottomBarCustomState extends State<BottomBarCustom> {
                   selected:
                       navigationIndex.indexSelected.value == 1 ? true : false,
                   onPressed: () {
-                    if (navigationIndex.indexSelected.value != 1) {
-                      setState(() {
-                        navigationIndex.setIndex(1);
-                        Get.to(() => CheckinPage());
-                      });
+                    if (userData.userdata.value.token != null) {
+                      if (navigationIndex.indexSelected.value != 1) {
+                        setState(() {
+                          navigationIndex.setIndex(1);
+                          Get.to(() => CheckinPage());
+                        });
+                      }
+                    } else {
+                      Get.to(() => LoginPage());
                     }
                   },
                 ),
@@ -74,11 +81,15 @@ class _BottomBarCustomState extends State<BottomBarCustom> {
                   selected:
                       navigationIndex.indexSelected.value == 3 ? true : false,
                   onPressed: () {
-                    if (navigationIndex.indexSelected.value != 3) {
-                      setState(() {
-                        navigationIndex.setIndex(3);
-                        // Get.to(() => OrdersPage());
-                      });
+                    if (userData.userdata.value.token != null) {
+                      if (navigationIndex.indexSelected.value != 3) {
+                        setState(() {
+                          navigationIndex.setIndex(3);
+                          // Get.to(() => OrdersPage());
+                        });
+                      }
+                    } else {
+                      Get.to(() => LoginPage());
                     }
                   },
                 ),
@@ -88,11 +99,15 @@ class _BottomBarCustomState extends State<BottomBarCustom> {
                   selected:
                       navigationIndex.indexSelected.value == 4 ? true : false,
                   onPressed: () {
-                    if (navigationIndex.indexSelected.value != 4) {
-                      setState(() {
-                        navigationIndex.setIndex(4);
-                        Get.to(() => ResultPage());
-                      });
+                    if (userData.userdata.value.token != null) {
+                      if (navigationIndex.indexSelected.value != 4) {
+                        setState(() {
+                          navigationIndex.setIndex(4);
+                          Get.to(() => ResultPage());
+                        });
+                      }
+                    } else {
+                      Get.to(() => LoginPage());
                     }
                   },
                 )
@@ -264,6 +279,89 @@ class _CustomHeaderState extends State<CustomHeader> {
             ),
           )
         ],
+      ),
+    );
+  }
+}
+
+class CheckBoxRow extends StatelessWidget {
+  const CheckBoxRow({
+    super.key,
+    required this.name,
+    required this.code,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final String name;
+  final String code;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.symmetric(
+          vertical: name.length > 50 ? 20 : 10,
+          horizontal: 20,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 25,
+                  height: 25,
+                  margin: EdgeInsets.only(right: 10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.white),
+                    borderRadius: BorderRadius.circular(
+                      4,
+                    ),
+                  ),
+                  child: isSelected
+                      ? Icon(
+                          Icons.check,
+                          color: secondColor,
+                        )
+                      : null,
+                ),
+                SizedBox(
+                  width: code.isEmpty
+                      ? MediaQuery.of(context).size.width * 0.8
+                      : MediaQuery.of(context).size.width * 0.5,
+                  child: Text(
+                    name,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: name.length > 50 ? 14 : 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (code.isNotEmpty)
+              Container(
+                alignment: Alignment.center,
+                width: 45,
+                height: 25,
+                color: dangerColor,
+                child: Text(
+                  code,
+                  style: GoogleFonts.montserrat(
+                    fontSize: 12,
+                    color: Colors.white,
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              )
+          ],
+        ),
       ),
     );
   }

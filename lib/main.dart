@@ -12,10 +12,9 @@ void main() async {
   );
 
   await FCMConfig.instance.init(
-    defaultAndroidForegroundIcon:
-        '@mipmap/ic_launcher', //default is @mipmap/ic_launcher
+    defaultAndroidForegroundIcon: '@mipmap/ic_launcher',
     defaultAndroidChannel: const AndroidNotificationChannel(
-      'high_importance_channel', // same as value from android setup
+      'high_importance_channel',
       'Fcm config',
       importance: Importance.high,
       sound: RawResourceAndroidNotificationSound('notification'),

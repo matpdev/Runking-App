@@ -8,7 +8,6 @@ import 'package:runking_app/consts/colors.dart';
 import 'package:runking_app/globalController/user_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:runking_app/globalController/widgets/bottom_navigation_controller.dart';
-import 'package:runking_app/pages/account/login/login_page.dart';
 import 'package:runking_app/pages/checkin/view/checkin_auth_page.dart';
 import 'package:runking_app/pages/checkin/view/checkin_confirmdata_page.dart';
 import 'package:runking_app/widgets/widgets.dart';
@@ -104,7 +103,9 @@ class _CheckinConfirmPageState extends State<CheckinConfirmPage> {
           ),
           child: ListView(
             children: [
-              CustomHeader(),
+              CustomHeader(
+                onTap: () {},
+              ),
               Column(
                 children: [
                   Container(
@@ -257,18 +258,23 @@ class _CheckinConfirmPageState extends State<CheckinConfirmPage> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Container(
-                                      color: blueNeutralButtonColor,
-                                      width: 100,
-                                      height: 40,
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "VOLTAR",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w900,
-                                          fontStyle: FontStyle.italic,
+                                    InkWell(
+                                      onTap: () {
+                                        Get.back();
+                                      },
+                                      child: Container(
+                                        color: blueNeutralButtonColor,
+                                        width: 100,
+                                        height: 40,
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          "VOLTAR",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w900,
+                                            fontStyle: FontStyle.italic,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -329,142 +335,6 @@ class _CheckinConfirmPageState extends State<CheckinConfirmPage> {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class CheckBoxRow extends StatelessWidget {
-  const CheckBoxRow({
-    super.key,
-    required this.name,
-    required this.code,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final String name;
-  final String code;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 25,
-                  height: 25,
-                  margin: EdgeInsets.only(right: 10),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white),
-                    borderRadius: BorderRadius.circular(
-                      4,
-                    ),
-                  ),
-                  child: isSelected
-                      ? Icon(
-                          Icons.check,
-                          color: secondColor,
-                        )
-                      : null,
-                ),
-                Text(
-                  name,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-            Container(
-              alignment: Alignment.center,
-              width: 45,
-              height: 25,
-              color: dangerColor,
-              child: Text(
-                code,
-                style: GoogleFonts.montserrat(
-                  fontSize: 12,
-                  color: Colors.white,
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class CustomHeader extends StatelessWidget {
-  const CustomHeader({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SizedBox(
-            width: 60,
-          ),
-          Container(
-            width: 160,
-            height: 100,
-            margin: const EdgeInsets.only(top: 10, bottom: 20),
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/icons/runkingIcon.png"),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () {
-              Get.to(LoginPage());
-            },
-            child: Column(
-              children: [
-                Container(
-                  width: 55,
-                  height: 55,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: AssetImage(
-                        "assets/icons/runkingIcon.png",
-                      ),
-                    ),
-                  ),
-                ),
-                Text(
-                  "Name",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
       ),
     );
   }
